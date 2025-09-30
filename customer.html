@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowSeat | Guest Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,0,0"
+    />
+    <link rel="stylesheet" href="customer.css" />
+  </head>
+  <body class="customer-body">
+    <div class="customer-shell" id="customerShell" data-loading="true">
+      <header class="customer-header">
+        <div class="customer-header__brand">
+          <div class="brand-mark">FS</div>
+          <div class="brand-copy">
+            <span class="brand-name">FlowSeat</span>
+            <span class="brand-tagline">Guest access</span>
+          </div>
+        </div>
+        <div class="customer-header__actions">
+          <button class="ghost" id="customerLoginButton">Sign in</button>
+          <button class="ghost" id="customerLogoutButton">Sign out</button>
+        </div>
+      </header>
+
+      <main class="customer-main">
+        <section class="customer-loading" id="customerLoadingState">
+          <div class="spinner" aria-hidden="true"></div>
+          <p>Preparing your seating map...</p>
+        </section>
+
+        <section class="customer-error" id="customerErrorState" aria-live="polite"></section>
+
+        <section class="plan-banner" id="customerHero">
+          <span class="plan-banner__label">Guest view</span>
+          <h1 id="customerEventName">Loading event...</h1>
+          <p class="plan-banner__summary" id="customerEventSummary">—</p>
+        </section>
+
+        <section class="map-card" id="customerContent">
+          <header class="map-card__header">
+            <div class="map-card__title">
+              <h2>Select a seat</h2>
+              <p class="muted">Tap an available seat on the map to view details and reserve.</p>
+            </div>
+            <div class="map-card__stats" aria-label="Seat availability">
+              <span class="stat-chip">
+                <span class="chip-label">Available</span>
+                <strong id="customerStatsAvailable">0</strong>
+              </span>
+              <span class="stat-chip">
+                <span class="chip-label">Reserved</span>
+                <strong id="customerStatsReserved">0</strong>
+              </span>
+              <span class="stat-chip">
+                <span class="chip-label">Total</span>
+                <strong id="customerStatsTotal">0</strong>
+              </span>
+            </div>
+          </header>
+          <div class="map-card__canvas">
+            <div class="canvas-frame">
+              <canvas id="customerCanvas" aria-label="Interactive seating map"></canvas>
+              <div class="canvas-overlay" id="customerStageOverlay">Loading seating map...</div>
+            </div>
+            <p class="canvas-hint">Hover over a seat to preview its view.</p>
+            <div class="map-card__legend" aria-hidden="true">
+              <span><span class="dot dot--open"></span>Open</span>
+              <span><span class="dot dot--reserved"></span>Reserved</span>
+              <span><span class="dot dot--occupied"></span>Occupied</span>
+              <span><span class="dot dot--blocked"></span>Blocked</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="reservation-card">
+          <div class="reservation-grid">
+            <div class="reservation-panel customer-seat-card" id="seatPanel">
+              <h3>Seat details</h3>
+              <p class="muted">Tap on any open seat to see details.</p>
+            </div>
+            <div class="reservation-panel customer-seat-preview" id="seatPreview">
+              <div class="seat-preview__media" data-state="empty">
+                <div class="seat-preview__placeholder">Hover over a seat to preview its view.</div>
+                <img id="seatPreviewImage" alt="Seat view preview" hidden />
+              </div>
+              <div class="seat-preview__meta" id="seatPreviewMeta"></div>
+            </div>
+            <form class="reservation-panel customer-checkout" id="checkoutForm" novalidate>
+              <div class="customer-checkout__details">
+                <label class="field">
+                  <span>Your name</span>
+                  <input id="attendeeName" type="text" placeholder="Full name" autocomplete="name" />
+                </label>
+                <label class="field">
+                  <span>Contact email</span>
+                  <input id="attendeeEmail" type="email" placeholder="name@email.com" autocomplete="email" />
+                </label>
+              </div>
+              <button class="primary" type="button" id="buySeatButton" disabled>
+                Reserve seat
+              </button>
+              <p class="checkout-note" id="checkoutNote">Sign in before reserving.</p>
+            </form>
+          </div>
+        </section>
+
+        <section class="customer-about" id="customerAbout">
+          <h2>Event details</h2>
+          <p id="customerEventDescription" class="muted">
+            Seating map is live. Sign in to reserve your spot.
+          </p>
+          <div class="customer-meta-row">
+            <span class="material-symbol">location_on</span>
+            <span id="customerEventVenue">—</span>
+          </div>
+          <div class="customer-meta-row">
+            <span class="material-symbol">calendar_month</span>
+            <span id="customerEventDate">—</span>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast-stack" id="customerToastStack"></div>
+
+    <div class="customer-overlay" id="customerLoginOverlay" aria-hidden="true" role="dialog">
+      <div class="customer-modal" role="document">
+        <button
+          class="icon-button customer-modal__close"
+          type="button"
+          aria-label="Close login"
+          data-action="closeCustomerLogin"
+        >
+          <span class="material-symbol">close</span>
+        </button>
+        <div class="customer-modal__body">
+          <h2>Sign in to reserve seats</h2>
+          <p class="muted">Use the same Google account you used when registering for the event.</p>
+          <button class="primary google-button" type="button" id="customerGoogleLogin">
+            <span class="material-symbol">account_circle</span>
+            Continue with Google
+          </button>
+          <p class="login-error" id="customerLoginError" role="alert"></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="config.js" defer></script>
+    <script src="customer.js" type="module"></script>
+  </body>
+</html>
+
