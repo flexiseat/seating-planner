@@ -1,5 +1,10 @@
 const currentUrl = new URL(window.location.href);
-const redirectBase = new URL('.', currentUrl).href;
+
+const pathnameBase = currentUrl.pathname.endsWith('/')
+  ? currentUrl.pathname
+  : currentUrl.pathname.replace(/[^/]*$/, '');
+
+const redirectBase = `${currentUrl.origin}${pathnameBase}`;
 
 window.__FLOWSEAT_CONFIG = {
   baseUrl: redirectBase,
